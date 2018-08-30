@@ -1,0 +1,50 @@
+version: '3'
+
+#### docker-compose up -d;
+## This starts ONE master copy (for all stacks to use) of Traefik (isle-proxy) and Portainer
+
+services:
+  portainer:
+    image: portainer/portainer
+    container_name: isle-portainer-${CONTAINER_SHORT_ID}
+    command: -H unix:///var/run/docker.sock --no-auth  ## THIS IS UNSAFE FOR PRODUCTION AND SHOULD NOT BE USED WITHOUT HTTP AUTHENTICATION!
+    # restart: unless-stopped
+    networks:
+      isle-proxy:
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - isle-portainer-data:/data
+    labels:
+      - traefik.enable=true
+      - traefik.port=9000
+      - traefik.backend=port-isle
+      - traefik.docker.network=${ISLE_PROXY_NAME}
+      - "traefik.frontend.rule=Host:portainer.${BASE_DOMAIN};"
+
+  traefik:
+    image: traefik:latest
+    container_name: isle-proxy-${CONTAINER_SHORT_ID}
+    # restart: unless-stopped
+    networks:
+      isle-proxy:
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config/traefik/traefik.toml:/traefik.toml
+      - ./config/traefik/isle.localdomain:/certs/isle.localdomain
+    labels:
+      - traefik.enable=true
+      - traefik.port=8080
+      - traefik.backend=traefik
+      - traefik.frontend.rule=Host:admin.${BASE_DOMAIN};
+
+# Defined networks
+networks:
+  isle-proxy:
+    external:
+      name: ${ISLE_PROXY_NAME}
+
+volumes:
+  isle-portainer-data:

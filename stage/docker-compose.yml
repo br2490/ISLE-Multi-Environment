@@ -1,0 +1,105 @@
+version: '3'
+
+services:
+  mysql:
+    image: islandoracollabgroup/isle-mysql:latest
+    container_name: isle-mysql-${CONTAINER_SHORT_ID}
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+    networks:
+      isle-internal:
+    volumes:
+      - isle-db-data:/var/lib/mysql
+      - ./logs/mysql:/var/log/mysql
+    labels:
+      - traefik.enable=false
+
+  fedora:
+    image: benjaminrosner/isle-fedora:latest
+    container_name: isle-fedora-${CONTAINER_SHORT_ID}
+    networks:
+      isle-internal:
+    ports:
+      - "8280:8080"
+    depends_on:
+      - mysql
+      - solr
+    environment:
+      - JAVA_OPTS="-Djava.awt.headless=true -server -Xmx1024M -Xms128m -XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=70 -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
+    volumes:
+      - isle-fedora-data:/usr/local/fedora/data
+      - ./logs/fedora/fcrepo:/usr/local/fedora/server/logs
+      - ./logs/fedora/tomcat:/usr/local/tomcat/logs
+    labels:
+      - traefik.enable=false
+      - traefik.backend=isle-fedora-${CONTAINER_SHORT_ID}
+
+  solr:
+    image: benjaminrosner/isle-solr:latest
+    container_name: isle-solr-${CONTAINER_SHORT_ID}
+    networks:
+      isle-internal:
+    ports:
+      - "8281:8080"
+    depends_on:
+      - mysql
+    environment:
+      - JAVA_OPTS="-Djava.awt.headless=true -server -Xmx512M -XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=70 -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
+    volumes:
+      - isle-solr-data:/usr/local/solr
+      - ./logs/solr:/usr/local/tomcat/logs
+    labels:
+      - traefik.enable=false
+      - traefik.backend=isle-solr-${CONTAINER_SHORT_ID}
+      
+  image-services:
+    image: benjaminrosner/isle-imageservices:latest
+    container_name: isle-images-${CONTAINER_SHORT_ID}
+    networks:
+      isle-internal:
+    ports:
+      - "8282:8080"
+    depends_on:
+      - apache
+      - fedora
+    environment:
+      - JAVA_OPTS="-Djava.awt.headless=true -server -Xmx512M -XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=70 -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
+    volumes:
+      - ./logs/imageservices:/usr/local/tomcat/logs
+    labels:
+      - traefik.enable=false
+      - traefik.backend=isle-imageservices-${CONTAINER_SHORT_ID}
+
+  apache:
+    image: benjaminrosner/isle-apache:latest
+    container_name: isle-apache-${CONTAINER_SHORT_ID}
+    environment:
+      - PULL_ISLE_BUILD_TOOLS=true # Defaults to true.
+    networks:
+      isle-internal:
+      isle-external:
+    depends_on:
+      - mysql
+      - fedora
+      - solr
+    volumes:
+      - isle-apache-data:/var/www/html
+      - ./logs/apache/httpd:/var/log/apache2
+      - ./logs/apache/fits:/var/log/fits
+    labels:
+      - "traefik.frontend.rule=Host:${BASE_DOMAIN}; PathPrefix: /, /fedora, /solr, /adore-djatoka, /cantaloupe, /iiif"
+      - traefik.backend=isle-apache-${CONTAINER_SHORT_ID}
+      - traefik.docker.network=${ISLE_PROXY_NAME}
+
+# Defined networks
+networks:
+  isle-internal:
+  isle-external:
+    external:
+      name: ${ISLE_PROXY_NAME}
+
+volumes:
+  isle-db-data:
+  isle-fedora-data:
+  isle-solr-data:
+  isle-apache-data:
