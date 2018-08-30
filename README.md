@@ -13,12 +13,12 @@ Docker Image GitHub Repos that comprise this stack:
 * **Windows Users**: Please open the .env and uncomment `COMPOSE_CONVERT_WINDOWS_PATHS=1`
 
 ## Details and Anatomy of the Multi-Environment configuration
-* [Jump to the Quick Start](#quick-start)  
+* [Jump to the Quick Start](#quick-start) or [Jump to the Quick Start Scripts](#quick-start-scripts)
 
 This Quick Guide and pre-configured repository will walk through creating a "multi-environment" setup that contains a development (dev), staging (stage), and production (prod) instance of ISLE.
 You may remove or add as many additional instances to this configuration.  
 
-This is the anatomy of multi-env (**nb:** this section only a explanation of the stacks, _not_ a guide to be followed. [Jump to the Quick Start](#quick-start) 
+This is the anatomy of multi-env (**nb:** this section only a explanation of the stacks. It is _not_ a guide to be followed.)
 - Note well that in testing these _must_ be configured in your /etc/hosts files or they will not resolve.
   - /etc/hosts: `127.0.0.1 admin.isle.localdomian portainer.isle.localdomain isle.localdomain dev.isle.localdomian stage.isle.localdomain localhost`
   - On a production server adding a single A record for the base_domain with a wild-card CNAME pointing to that record should suffice.
@@ -27,7 +27,7 @@ This is the anatomy of multi-env (**nb:** this section only a explanation of the
   This tells docker to create a bridged network with the name **isle-proxy**. Note the name is arbitrary but it is used multiple times throughout, so take note.
 - Create one (1) "master" ISLE-Proxy and ISLE-Portainer  
   Editing the .env allows us to specify the name of the ingress-network we created, and our **base domain**.
-  - We `docker-compose up -d` this master proxy and Portainer only once.
+  - `docker-compose up -d` this master proxy and Portainer only once.
 - For each environment (e.g., dev, stage, prod, etc.) copy the ISLE stack's **basic** docker-compose.yml and .env files to new directories.
   - Edit the .env file to do most of the work in these directories:
     - Specify the name of the ingress-network (**isle-proxy**), and create unique values for the project name, short id, and **base domain**.
@@ -37,15 +37,15 @@ This is the anatomy of multi-env (**nb:** this section only a explanation of the
   **DO NOT EXPOSE OTHER COMPNENTS TO THE INGRESS NETWORK**
   - For example:
     - In .env our BASE_DOMAIN is `dev.isle.localdomain`
-    - We change our port mapping to unique values (e.g., for `dev` this is 8380, 8381, 8382; `stage` this is 8280, 8281, 8283; etc.)
+    - Change the port mapping to unique values (e.g., for `dev` this is 8380, 8381, 8382; `stage` this is 8280, 8281, 8283; etc.)
     - The site is available at: http://dev.isle.localdomain
     - Fedora is available at: http://localhost:8380
     - Solr is available at: http://localhost:8381
     - Image-Services are available at: http://localhost:8382/adore-djatoka, http://localhost:8382/cantalopue/admin
-- That's all! Checkout the [Quick Start](#quick-start) to spin up your own multi-environment!
 
 ## Quick Start Scripts
-- Startup on nix/Mac environments:
+**This section is currently only available for Linux/Mac users.**
+- Startup:
 1. Edit your /etc/hosts or equivalent
 `127.0.0.1 admin.isle.localdomian portainer.isle.localdomain isle.localdomain dev.isle.localdomian stage.isle.localdomain localhost`
 2. Clone this repo 
@@ -56,8 +56,8 @@ This is the anatomy of multi-env (**nb:** this section only a explanation of the
 4. See step 12 of (Quick Start)[#quick-start] to remove an environment
 5. Skip to (Locations, Ports)[#locations-ports]
 
-- Shutdown on nix/Mac environments:
-1. Run `quickstart.sh` on nix/Mac environments.
+- Shutdown:
+1. Run `quick-stop.sh` on nix/Mac environments.
     - `chmod +x quick-stop.sh`
     - `./quick-stop.sh`
 
