@@ -10,6 +10,7 @@ Docker Image GitHub Repos that comprise this stack:
 * Docker-CE or EE
 * Docker-compose
 * Git
+* **Memory allocated of 10GB at the very minimum.**
 * **Windows Users**: Please open the .env and uncomment `COMPOSE_CONVERT_WINDOWS_PATHS=1`
 
 ## Details and Anatomy of the Multi-Environment configuration
