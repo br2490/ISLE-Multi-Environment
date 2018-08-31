@@ -11,8 +11,6 @@ services:
     volumes:
       - isle-db-data:/var/lib/mysql
       - ./logs/mysql:/var/log/mysql
-    labels:
-      - traefik.enable=false
 
   fedora:
     image: benjaminrosner/isle-fedora:latest
@@ -25,14 +23,12 @@ services:
       - mysql
       - solr
     environment:
-      - JAVA_OPTS=-Djava.awt.headless=true -server -Xmx512M -XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=70 -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true
+      - JAVA_MAX_MEM=512M
+      - JAVA_MIN_MEM=0
     volumes:
       - isle-fedora-data:/usr/local/fedora/data
       - ./logs/fedora/fcrepo:/usr/local/fedora/server/logs
       - ./logs/fedora/tomcat:/usr/local/tomcat/logs
-    labels:
-      - traefik.enable=false
-      - traefik.backend=isle-fedora-${CONTAINER_SHORT_ID}
 
   solr:
     image: benjaminrosner/isle-solr:latest
@@ -44,13 +40,11 @@ services:
     depends_on:
       - mysql
     environment:
-      - JAVA_OPTS=-Djava.awt.headless=true -server -Xmx512M -XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=70 -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true
+      - JAVA_MAX_MEM=512M
+      - JAVA_MIN_MEM=0
     volumes:
       - isle-solr-data:/usr/local/solr
       - ./logs/solr:/usr/local/tomcat/logs
-    labels:
-      - traefik.enable=false
-      - traefik.backend=isle-solr-${CONTAINER_SHORT_ID}
       
   image-services:
     image: benjaminrosner/isle-imageservices:latest
@@ -63,12 +57,10 @@ services:
       - apache
       - fedora
     environment:
-      - JAVA_OPTS=-Djava.awt.headless=true -server -Xmx512M -XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=70 -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true
+      - JAVA_MAX_MEM=512M
+      - JAVA_MIN_MEM=0
     volumes:
       - ./logs/imageservices:/usr/local/tomcat/logs
-    labels:
-      - traefik.enable=false
-      - traefik.backend=isle-imageservices-${CONTAINER_SHORT_ID}
 
   apache:
     image: benjaminrosner/isle-apache:latest
@@ -89,9 +81,10 @@ services:
       - ./logs/apache/httpd:/var/log/apache2
       - ./logs/apache/fits:/var/log/fits
     labels:
-      - "traefik.frontend.rule=Host:${BASE_DOMAIN}; PathPrefix: /, /fedora, /solr, /adore-djatoka, /cantaloupe, /iiif"
       - traefik.backend=isle-apache-${CONTAINER_SHORT_ID}
       - traefik.docker.network=${ISLE_PROXY_NAME}
+      - traefik.enable=true
+      - "traefik.frontend.rule=Host:${BASE_DOMAIN}; PathPrefix: /, /fedora, /solr, /adore-djatoka, /cantaloupe, /iiif"
 
 # Defined networks
 networks:

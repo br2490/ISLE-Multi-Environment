@@ -15,10 +15,10 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - isle-portainer-data:/data
     labels:
-      - traefik.enable=true
       - traefik.port=9000
-      - traefik.backend=port-isle
+      - traefik.backend=isle-portainer-${CONTAINER_SHORT_ID}
       - traefik.docker.network=${ISLE_PROXY_NAME}
+      - traefik.enable=true
       - "traefik.frontend.rule=Host:portainer.${BASE_DOMAIN};"
 
   traefik:
@@ -35,9 +35,9 @@ services:
       - ./config/traefik/traefik.toml:/traefik.toml
       - ./config/traefik/isle.localdomain:/certs/isle.localdomain
     labels:
-      - traefik.enable=true
       - traefik.port=8080
-      - traefik.backend=traefik
+      - traefik.backend=isle-traefik-${CONTAINER_SHORT_ID}
+      - traefik.enable=true
       - traefik.frontend.rule=Host:admin.${BASE_DOMAIN};
 
 # Defined networks
