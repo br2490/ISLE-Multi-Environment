@@ -25,7 +25,7 @@ services:
       - mysql
       - solr
     environment:
-      - JAVA_OPTS="-Djava.awt.headless=true -server -Xmx1024M -Xms128m -XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=70 -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
+      - JAVA_OPTS=-Djava.awt.headless=true -server -Xmx1024M -XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=70 -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true
     volumes:
       - isle-fedora-data:/usr/local/fedora/data
       - ./logs/fedora/fcrepo:/usr/local/fedora/server/logs
@@ -44,7 +44,7 @@ services:
     depends_on:
       - mysql
     environment:
-      - JAVA_OPTS="-Djava.awt.headless=true -server -Xmx512M -XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=70 -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
+      - JAVA_OPTS=-Djava.awt.headless=true -server -Xmx512M -XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=70 -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true
     volumes:
       - isle-solr-data:/usr/local/solr
       - ./logs/solr:/usr/local/tomcat/logs
@@ -63,7 +63,7 @@ services:
       - apache
       - fedora
     environment:
-      - JAVA_OPTS="-Djava.awt.headless=true -server -Xmx512M -XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=70 -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true"
+      - JAVA_OPTS=-Djava.awt.headless=true -server -Xmx512M -XX:+UseG1GC -XX:+UseStringDeduplication -XX:MaxGCPauseMillis=200 -XX:InitiatingHeapOccupancyPercent=70 -Djava.net.preferIPv4Stack=true -Djava.net.preferIPv4Addresses=true
     volumes:
       - ./logs/imageservices:/usr/local/tomcat/logs
     labels:
@@ -77,6 +77,8 @@ services:
       - PULL_ISLE_BUILD_TOOLS=true # Defaults to true.
     networks:
       isle-internal:
+        aliases:
+          - ${BASE_DOMAIN}
       isle-external:
     depends_on:
       - mysql
