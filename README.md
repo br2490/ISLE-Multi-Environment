@@ -10,11 +10,11 @@ Docker Image GitHub Repos that comprise this stack:
 * Docker-CE or EE
 * Docker-compose
 * Git
-* **Memory allocated of 10GB at the very minimum.**
+* **Memory allocated of 8GB at the very minimum.**
 * **Windows Users**: Please open the .env and uncomment `COMPOSE_CONVERT_WINDOWS_PATHS=1`
 
 ## Details and Anatomy of the Multi-Environment configuration
-* [Jump to the Quick Start](#quick-start) or [Jump to the Quick Start Scripts](#quick-start-scripts)
+[Jump to the Quick Start](#quick-start) or [Jump to the Quick Start Scripts](#quick-start-scripts)
 
 This Quick Guide and pre-configured repository will walk through creating a "multi-environment" setup that contains a development (dev), staging (stage), and production (prod) instance of ISLE.
 You may remove or add as many additional instances to this configuration.  
@@ -54,8 +54,8 @@ This is the anatomy of multi-env (**nb:** this section only a explanation of the
 3. Run `quick-start.sh` on nix/Mac environments.
     - `chmod +x quick-start.sh`
     - `./quick-start.sh`
-4. See step 12 of (Quick Start)[#quick-start] to remove an environment
-5. Skip to (Locations, Ports)[#locations-ports]
+4. See step 12 of [Quick Start](#quick-start) to remove an environment
+5. Skip to [Locations, Ports](#locations-ports)
 
 - Shutdown:
 1. Run `quick-stop.sh` on nix/Mac environments.
@@ -91,18 +91,21 @@ This is the anatomy of multi-env (**nb:** this section only a explanation of the
     - `cd ../prod`
     - `docker-compose up -d`
     - etc.  
-* For the **ALL** environments:
+* For **ALL** environments:
 11. Instantiate Islandora on the respective ISLE-apache containers:
     - Note you are running this for each environment, and will need to replace the name of the container:
     - Where CONTAINER_SHORT_ID in this repository's example is `dev`, `stage`, and `prod`
     - `docker exec -it isle-apache-{CONTAINER_SHORT_ID} bash /utility-scripts/isle_drupal_build_tools/isle_islandora_installer.sh`
+
 12. To remove an environment:
-    - In the folder of the environment destroy (contains docker-compose.yml): `docker-compose down -v`
+    - In the folder of the environment to destroy (contains docker-compose.yml): `docker-compose down -v`
 13. To remove the master Proxy and Portainer
     - In the main folder (contains docker-compose.yml): `docker-compose down -v`
+14. To remove the Ingress `proxy` network:
+    - `docker network rm proxy`
 
 
-**Visit http://portainer.isle.localdomain and review out the running stacks, logs, etc.**
+**Visit http://portainer.isle.localdomain to review the running stacks, logs, etc.**
 
 ## Important Notes, Ports, Pages and Usernames/Passwords
 @SEE: https://github.com/Islandora-Collaboration-Group/ISLE  
@@ -112,19 +115,24 @@ This is the anatomy of multi-env (**nb:** this section only a explanation of the
 
 ### Locations, Ports:
 * Make sure your /etc/hosts contains `127.0.0.1 admin.isle.localdomian portainer.isle.localdomain isle.localdomain dev.isle.localdomian stage.isle.localdomain localhost`. See original docs on how-to.
+
+**Administrative Portals**  
 * Traefik is available at http://admin.isle.localdomain
 * Portainer is available at http://portainer.isle.localdomain
-- Development Environment
+
+**Development Environment**  
 * Islandora is available at http://dev.isle.localdomain
 * Fedora is available at http://localhost:8380/
 * Solr is available at http://localhost:8381/
 * ImageServices are available at http://localhost:8382/
-- Staging Environment
+
+**Staging Environment**  
 * Islandora is available at http://stage.isle.localdomain
 * Fedora is available at http://localhost:8280/
 * Solr is available at http://localhost:8281/
 * ImageServices are available at http://localhost:8282/
-- Production Environment
+
+**Production Environment**  
 * Islandora is available at http://isle.localdomain
 * Fedora is available at http://localhost:8180/
 * Solr is available at http://localhost:8181/
