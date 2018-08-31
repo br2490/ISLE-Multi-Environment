@@ -96,7 +96,7 @@ This is the anatomy of multi-env (**nb:** this section only a explanation of the
     - Note you are running this for each environment, and will need to replace the name of the container:
     - Where CONTAINER_SHORT_ID in this repository's example is `dev`, `stage`, and `prod`
     - `docker exec -it isle-apache-{CONTAINER_SHORT_ID} bash /utility-scripts/isle_drupal_build_tools/isle_islandora_installer.sh`
-
+* Removing Environment(s)
 12. To remove an environment:
     - In the folder of the environment to destroy (contains docker-compose.yml): `docker-compose down -v`
 13. To remove the master Proxy and Portainer
