@@ -1,4 +1,4 @@
-# ISLE Docker Mutli-Environment Example Repo
+# ISLE Docker Multi-Environment Example Repo
 
 Docker Image GitHub Repos that comprise this stack: 
  - [`isle-fedora`](https://github.com/Islandora-Collaboration-Group/isle-fedora/)
@@ -21,7 +21,7 @@ You may remove or add as many additional instances to this configuration.
 
 This is the anatomy of multi-env (**nb:** this section only a explanation of the stacks. It is _not_ a guide to be followed.)
 - Note well that in testing these _must_ be configured in your /etc/hosts files or they will not resolve.
-  - /etc/hosts: `127.0.0.1 admin.isle.localdomian portainer.isle.localdomain isle.localdomain dev.isle.localdomian stage.isle.localdomain localhost`
+  - /etc/hosts: `127.0.0.1 admin.isle.localdomain portainer.isle.localdomain isle.localdomain dev.isle.localdomain stage.isle.localdomain localhost`
   - On a production server adding a single A record for the base_domain with a wild-card CNAME pointing to that record should suffice.
 - Create a single ingress-network (i.e., isle-external) for _all environments_ to use.  
   This is accomplished by executing: `docker network create isle-proxy`.  
@@ -35,20 +35,20 @@ This is the anatomy of multi-env (**nb:** this section only a explanation of the
     - Launch each environment, one-by-one, normally with `docker-compose up -d`.
     - Instantiate Islandora by running  `docker exec -it isle-apache-{CONTAINER_SHORT_ID} bash /utility-scripts/isle_drupal_build_tools/isle_islandora_installer.sh`
 - Note well that only ISLE-Apache in the environments are added to the isle-external network by default.  
-  **DO NOT EXPOSE OTHER COMPNENTS TO THE INGRESS NETWORK**
+  **DO NOT EXPOSE OTHER COMPONENTS TO THE INGRESS NETWORK**
   - For example:
     - In .env our BASE_DOMAIN is `dev.isle.localdomain`
     - Change the port mapping to unique values (e.g., for `dev` this is 8380, 8381, 8382; `stage` this is 8280, 8281, 8283; etc.)
     - The site is available at: http://dev.isle.localdomain
     - Fedora is available at: http://localhost:8380
     - Solr is available at: http://localhost:8381
-    - Image-Services are available at: http://localhost:8382/adore-djatoka, http://localhost:8382/cantalopue/admin
+    - Image-Services are available at: http://localhost:8382/adore-djatoka, http://localhost:8382/cantaloupe/admin
 
 ## Quick Start Scripts
 **This section is currently only available for Linux/Mac users.**
 - Startup:
 1. Edit your /etc/hosts or equivalent
-`127.0.0.1 admin.isle.localdomian portainer.isle.localdomain isle.localdomain dev.isle.localdomian stage.isle.localdomain localhost`
+`127.0.0.1 admin.isle.localdomain portainer.isle.localdomain isle.localdomain dev.isle.localdomain stage.isle.localdomain localhost`
 2. Clone this repo 
     - `git clone https://github.com/Islandora-Collaboration-Group/ISLE-Multi-Environment.git` 
 3. Run `quick-start.sh` on nix/Mac environments.
@@ -64,7 +64,7 @@ This is the anatomy of multi-env (**nb:** this section only a explanation of the
 
 ## Quick Start
 1. Edit your /etc/hosts or equivalent
-`127.0.0.1 admin.isle.localdomian portainer.isle.localdomain isle.localdomain dev.isle.localdomian stage.isle.localdomain localhost`
+`127.0.0.1 admin.isle.localdomain portainer.isle.localdomain isle.localdomain dev.isle.localdomain stage.isle.localdomain localhost`
 2. Create the proxy that all images will connect to: 
     - `docker network create isle-proxy`
 3. Clone this repo 
@@ -114,7 +114,7 @@ This is the anatomy of multi-env (**nb:** this section only a explanation of the
 **Note that both HTTP and HTTPS work** Please accept the self-signed certificate for testing when using HTTPS.
 
 ### Locations, Ports:
-* Make sure your /etc/hosts contains `127.0.0.1 admin.isle.localdomian portainer.isle.localdomain isle.localdomain dev.isle.localdomian stage.isle.localdomain localhost`. See original docs on how-to.
+* Make sure your /etc/hosts contains `127.0.0.1 admin.isle.localdomain portainer.isle.localdomain isle.localdomain dev.isle.localdomain stage.isle.localdomain localhost`. See original docs on how-to.
 
 **Administrative Portals**  
 * Traefik is available at http://admin.isle.localdomain
