@@ -19,7 +19,7 @@ sleep 2
 for stack in "${STACKS[@]}"
 do
   echo "Starting work on ${stack}"
-  cd $MAIN_DIR/$stack
+  cd "$MAIN_DIR/$stack"
   echo 'Pulling images.'
   docker-compose pull
   echo 'Starting stack'
