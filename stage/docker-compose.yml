@@ -2,71 +2,85 @@ version: '3'
 
 services:
   mysql:
-    image: islandoracollabgroup/isle-mysql:latest
+    image: islandoracollabgroup/isle-mysql:1.1
     container_name: isle-mysql-${CONTAINER_SHORT_ID}
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_ROOT_PASSWORD
     networks:
-      isle-internal:
+      - isle-internal
     volumes:
       - isle-db-data:/var/lib/mysql
       - ./logs/mysql:/var/log/mysql
 
   fedora:
-    image: benjaminrosner/isle-fedora:latest
+    image: islandoracollabgroup/isle-fedora:1.1
     container_name: isle-fedora-${CONTAINER_SHORT_ID}
+    environment:
+      - JAVA_MAX_MEM=768M  ## Tweak to desired
+      - JAVA_MIN_MEM=128M  ## Tweak to desired
+    env_file: 
+      - tomcat.env
+      - .env
     networks:
-      isle-internal:
+      - isle-internal
     ports:
-      - "8380:8080"
+      - "8180:8080"
     depends_on:
       - mysql
       - solr
-    environment:
-      - JAVA_MAX_MEM=1G
-      - JAVA_MIN_MEM=128M
     volumes:
-      - isle-fedora-data:/usr/local/fedora/data
+      - isle-fedora-datastreamStore:/usr/local/fedora/data/datastreamStore # Migrators change this to your local DS folder.
+      - isle-fedora-objectStore:/usr/local/fedora/data/objectStore # Migrators change this to your local OS folder.
+      - isle-fedora-resourceIndex:/usr/local/fedora/data/resourceIndex # Migrators change this to your local RI folder.
+      - isle-fedora-activemq:/usr/local/fedora/data/activemq-data # Migrators change this to your local MQ folder.
+      - isle-fedora-XACML:/usr/local/fedora/data/fedora-xacml-policies
       - ./logs/fedora/fcrepo:/usr/local/fedora/server/logs
       - ./logs/fedora/tomcat:/usr/local/tomcat/logs
 
   solr:
-    image: benjaminrosner/isle-solr:latest
+    image: islandoracollabgroup/isle-solr:1.1
     container_name: isle-solr-${CONTAINER_SHORT_ID}
+    environment:
+      - JAVA_MAX_MEM=512M  ## Tweak to desired
+      - JAVA_MIN_MEM=0  ## Tweak to desired
+    env_file:
+      - tomcat.env
     networks:
-      isle-internal:
+      - isle-internal
     ports:
-      - "8381:8080"
+      - "8181:8080"
     depends_on:
       - mysql
-    environment:
-      - JAVA_MAX_MEM=1G
-      - JAVA_MIN_MEM=128M
     volumes:
       - isle-solr-data:/usr/local/solr
       - ./logs/solr:/usr/local/tomcat/logs
-      
+
   image-services:
-    image: benjaminrosner/isle-imageservices:latest
+    image: islandoracollabgroup/isle-imageservices:1.1
     container_name: isle-images-${CONTAINER_SHORT_ID}
+    environment:
+      - JAVA_MAX_MEM=512M
+      - JAVA_MIN_MEM=0
+    env_file: 
+      - tomcat.env
+      - .env
     networks:
-      isle-internal:
-    ports:
-      - "8382:8080"
+      - isle-internal
     depends_on:
       - apache
       - fedora
-    environment:
-      - JAVA_MAX_MEM=2G
-      - JAVA_MIN_MEM=0
+    ports:
+      - "8182:8080"
     volumes:
       - ./logs/imageservices:/usr/local/tomcat/logs
 
   apache:
-    image: benjaminrosner/isle-apache:latest
+    image: islandoracollabgroup/isle-apache:1.1
     container_name: isle-apache-${CONTAINER_SHORT_ID}
     environment:
       - PULL_ISLE_BUILD_TOOLS=true # Defaults to true.
+    env_file: 
+      - .env
     networks:
       isle-internal:
         aliases:
@@ -81,10 +95,10 @@ services:
       - ./logs/apache/httpd:/var/log/apache2
       - ./logs/apache/fits:/var/log/fits
     labels:
-      - traefik.backend=isle-apache-${CONTAINER_SHORT_ID}
-      - traefik.docker.network=${ISLE_PROXY_NAME}
+      - traefik.docker.network=${COMPOSE_PROJECT_NAME}_isle-internal
       - traefik.enable=true
-      - "traefik.frontend.rule=Host:${BASE_DOMAIN}; PathPrefix: /, /fedora, /solr, /adore-djatoka, /cantaloupe, /iiif"
+      - "traefik.frontend.rule=Host:${BASE_DOMAIN}; PathPrefix: /, /adore-djatoka, /cantaloupe"
+
 
 # Defined networks
 networks:
@@ -93,8 +107,13 @@ networks:
     external:
       name: ${ISLE_PROXY_NAME}
 
+# Docker controlled volumes. 
 volumes:
   isle-db-data:
-  isle-fedora-data:
+  isle-fedora-datastreamStore:
+  isle-fedora-objectStore:
+  isle-fedora-resourceIndex:
+  isle-fedora-activemq:
+  isle-fedora-XACML:
   isle-solr-data:
   isle-apache-data:
