@@ -90,7 +90,6 @@ services:
       - mysql
       - fedora
       - solr
-      - traefik
     volumes:
       - isle-apache-data:/var/www/html
       - ./logs/apache/httpd:/var/log/apache2

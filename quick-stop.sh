@@ -9,7 +9,7 @@ MAIN_DIR=`pwd`
 for stack in "${STACKS[@]}"
 do
   echo "Removing ${stack}"
-  cd $MAIN_DIR/$stack
+  cd "$MAIN_DIR/$stack"
   docker-compose down -v
   echo "Done work on ${stack}. Moving on..."
   sleep 2
