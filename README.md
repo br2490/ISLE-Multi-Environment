@@ -122,21 +122,21 @@ This is the anatomy of multi-env (**nb:** this section only a explanation of the
 
 **Development Environment**  
 * Islandora is available at http://dev.isle.localdomain
-* Fedora is available at http://localhost:8380/
-* Solr is available at http://localhost:8381/
-* ImageServices are available at http://localhost:8382/
-
-**Staging Environment**  
-* Islandora is available at http://stage.isle.localdomain
 * Fedora is available at http://localhost:8280/
 * Solr is available at http://localhost:8281/
 * ImageServices are available at http://localhost:8282/
 
-**Production Environment**  
-* Islandora is available at http://isle.localdomain
+**Staging Environment**  
+* Islandora is available at http://stage.isle.localdomain
 * Fedora is available at http://localhost:8180/
 * Solr is available at http://localhost:8181/
 * ImageServices are available at http://localhost:8182/
+
+**Production Environment**  
+* Islandora is available at http://isle.localdomain
+* Fedora is available at http://localhost:8080/
+* Solr is available at http://localhost:8081/
+* ImageServices are available at http://localhost:8082/
 
 ### Users and Passwords
 Read as username:password
